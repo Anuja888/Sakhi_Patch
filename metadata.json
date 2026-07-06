@@ -1,0 +1,7 @@
+{
+  "name": "Saheli Patch",
+  "description": "A professional menstrual health monitoring web app with ESP8266 device integration for real-time basal body temperature tracking and health insights.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
