@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "Saheli Patch",
+    "slug": "saheli-patch",
+    "version": "1.0.0",
+    "scheme": "saheli",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "platforms": ["ios", "android"],
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTabletMode": true,
+      "bundleIdentifier": "com.saheli.patch"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FAFAFA"
+      },
+      "permissions": [
+        "BLUETOOTH",
+        "BLUETOOTH_ADMIN",
+        "BLUETOOTH_SCAN",
+        "BLUETOOTH_CONNECT",
+        "ACCESS_FINE_LOCATION"
+      ],
+      "package": "com.saheli.patch"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
