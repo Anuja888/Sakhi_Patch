@@ -26,7 +26,7 @@ const App: React.FC = () => {
     const isCareTeam = window.localStorage.getItem('saheli_care_team') === 'true';
     
     if (savedAuth === 'demo' || savedAuth === 'signed-in') {
-      setAuthMode(savedAuth);
+      setAuthMode(savedAuth as 'demo' | 'signed-in');
       setIsAuthenticated(true);
       
       if (savedAuth === 'demo') {
@@ -55,9 +55,9 @@ const App: React.FC = () => {
           lastConnected: Date.now(),
         });
       } else {
-        setProfile(storageService.getDefaultProfile());
-        setReadings([]);
-        setDevice(null);
+        setProfile(storageService.getProfile());
+        setReadings(storageService.getReadings());
+        setDevice(storageService.getDeviceInfo());
       }
     }
   }, []);
@@ -85,10 +85,9 @@ const App: React.FC = () => {
   const handleDeleteData = () => {
     if (!window.confirm('Delete all local data and reset the app?')) return;
     storageService.clearAllData();
-    const seeded = storageService.seedDemoData();
-    setReadings(seeded.readings);
-    setProfile(seeded.profile);
-    setDevice(seeded.device);
+    setReadings([]);
+    setProfile(storageService.getDefaultProfile());
+    setDevice(null);
   };
 
   const handleLogin = (email: string, password: string) => {
@@ -118,9 +117,20 @@ const App: React.FC = () => {
         lastConnected: Date.now(),
       });
     } else {
-      setProfile(storageService.getDefaultProfile());
-      setReadings([]);
-      setDevice(null);
+      const savedProfile = storageService.getProfile();
+      let userProfile = savedProfile;
+      if (savedProfile.name === 'User' || savedProfile.name === 'Demo User') {
+        const nameFromEmail = email.split('@')[0];
+        const formattedName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
+        userProfile = {
+          ...savedProfile,
+          name: formattedName,
+        };
+        storageService.saveProfile(userProfile);
+      }
+      setProfile(userProfile);
+      setReadings(storageService.getReadings());
+      setDevice(storageService.getDeviceInfo());
     }
   };
 
@@ -135,17 +145,27 @@ const App: React.FC = () => {
     setDevice(seeded.device);
   };
 
-  const handleSignup = (name: string, age: number) => {
+  const handleSignup = (
+    name: string,
+    age: number,
+    averageCycleLength: number,
+    lastPeriodDate: number,
+    language: 'en' | 'hi' | 'te'
+  ) => {
     window.localStorage.setItem(AUTH_KEY, 'signed-in');
     setAuthMode('signed-in');
     setIsAuthenticated(true);
-    setProfile({
+    const newProfile = {
       name,
       age,
-      averageCycleLength: 28,
-      lastPeriodDate: Date.now() - 18 * 24 * 60 * 60 * 1000,
-      language: 'en',
-    });
+      averageCycleLength,
+      lastPeriodDate,
+      language,
+    };
+    storageService.saveProfile(newProfile);
+    storageService.saveReadings([]);
+    storageService.saveDeviceInfo(null);
+    setProfile(newProfile);
     setReadings([]);
     setDevice(null);
   };

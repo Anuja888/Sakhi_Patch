@@ -70,8 +70,8 @@ const buildDemoReadings = (now: number): TemperatureReading[] => {
 
 export const storageService = {
   getDefaultProfile: (): UserProfile => ({
-    name: 'Demo User',
-    age: 29,
+    name: 'User',
+    age: 25,
     averageCycleLength: 28,
     lastPeriodDate: Date.now() - 18 * 24 * 60 * 60 * 1000,
     language: 'en',

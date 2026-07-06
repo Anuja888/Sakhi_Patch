@@ -15,6 +15,7 @@ const ConnectView: React.FC<ConnectViewProps> = ({ onDeviceConnected, onNewReadi
   const [discoveredDevices, setDiscoveredDevices] = useState<any[]>([]);
   const [status, setStatus] = useState<'idle' | 'scanning' | 'connecting' | 'connected' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [connectedDeviceName, setConnectedDeviceName] = useState('');
 
   const bleService = BLEService.getInstance();
 
@@ -37,6 +38,7 @@ const ConnectView: React.FC<ConnectViewProps> = ({ onDeviceConnected, onNewReadi
       };
       
       storageService.saveDeviceInfo(deviceInfo);
+      setConnectedDeviceName(deviceInfo.name);
       onDeviceConnected(deviceInfo);
       
       // Start receiving data
@@ -64,16 +66,16 @@ const ConnectView: React.FC<ConnectViewProps> = ({ onDeviceConnected, onNewReadi
         firmwareVersion: 'v1.0.0',
         lastConnected: Date.now()
       };
-      storageService.seedDemoData();
       storageService.saveDeviceInfo(mockDevice);
+      setConnectedDeviceName(mockDevice.name);
       onDeviceConnected(mockDevice);
       
-      // Populate the app with demo readings immediately
+      // Seed and generate mock readings to show data tracking in UI
       const seeded = storageService.seedDemoData();
       seeded.readings.forEach((reading) => onNewReading(reading));
       
       setStatus('connected');
-    }, 1000);
+    }, 1200);
   };
 
   return (
@@ -103,11 +105,6 @@ const ConnectView: React.FC<ConnectViewProps> = ({ onDeviceConnected, onNewReadi
       </div>
 
       <div className="w-full space-y-4">
-        <div className="rounded-2xl border border-primary/10 bg-primary/5 p-4 text-sm text-gray-600">
-          <p className="font-semibold text-gray-700">How demo mode works</p>
-          <p className="mt-1">If no patch is connected, the app can generate sample temperature readings so you can explore the dashboard, trends, and cycle insights instantly.</p>
-        </div>
-
         {status !== 'connected' && (
           <button
             onClick={handleScan}
@@ -119,20 +116,20 @@ const ConnectView: React.FC<ConnectViewProps> = ({ onDeviceConnected, onNewReadi
           </button>
         )}
 
-        {status === 'idle' || status === 'error' ? (
+        {(status === 'idle' || status === 'error') && (
           <button
             onClick={simulateConnection}
-            className="w-full py-4 bg-white border border-gray-200 text-gray-600 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-gray-50"
+            className="w-full py-4 bg-white border border-gray-200 text-gray-600 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-gray-50 transition-transform active:scale-95"
           >
             <Smartphone size={20} />
-            Try Demo Mode
+            Simulate Device Sync (Demo)
           </button>
-        ) : null}
+        )}
       </div>
 
       {status === 'connected' && (
         <div className="bg-success/5 border border-success/10 rounded-3xl p-6 w-full text-center">
-          <p className="text-sm text-success font-medium mb-4">Device: SakhiPatch_Demo</p>
+          <p className="text-sm text-success font-medium mb-4">Device: {connectedDeviceName || 'SakhiPatch'}</p>
           <button 
             onClick={() => window.location.reload()}
             className="text-primary font-bold text-sm"
